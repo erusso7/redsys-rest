@@ -3,6 +3,7 @@
 namespace RedsysRest;
 
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Request;
 use RedsysRest\Exceptions\UnconfiguredClient;
 use RedsysRest\Order\Order;
 
@@ -27,12 +28,18 @@ class Redsys
         return $this->config;
     }
 
-    public function execute(Order $operation): void
+    public function execute(Order $order): void
     {
         if ($this->config === null) {
             throw UnconfiguredClient::create();
         }
 
-        $this->client->send($operation->request());
+        $request = new Request(
+            $order->method(),
+            $this->config->url(),
+            [],
+            json_encode($order)
+        );
+        $this->client->send($request);
     }
 }
