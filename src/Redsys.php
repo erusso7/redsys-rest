@@ -3,19 +3,18 @@
 namespace RedsysRest;
 
 use GuzzleHttp\ClientInterface;
+use RedsysRest\Exceptions\UnconfiguredClient;
+use RedsysRest\Order\Order;
 
 class Redsys
 {
     private ClientInterface $client;
-    private Config $config;
+    private ?Config $config;
 
-    public function __construct(ClientInterface $client, Config $config = null)
+    public function __construct(ClientInterface $client, ?Config $config = null)
     {
         $this->client = $client;
-
-        if ($config !== null) {
-            $this->config = $config;
-        }
+        $this->config = $config;
     }
 
     public function withConfig(Config $config): self
@@ -26,5 +25,14 @@ class Redsys
     public function config(): Config
     {
         return $this->config;
+    }
+
+    public function execute(Order $operation): void
+    {
+        if ($this->config === null) {
+            throw UnconfiguredClient::create();
+        }
+
+        $this->client->send($operation->request());
     }
 }
