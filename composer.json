@@ -21,10 +21,12 @@
   },
   "require": {
     "guzzlehttp/guzzle": "^6.5",
-    "ext-json": "*"
+    "ext-json": "*",
+    "ext-openssl": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.1",
-    "mockery/mockery": "^1.3"
+    "mockery/mockery": "^1.3",
+    "symfony/var-dumper": "^5.0"
   }
 }
