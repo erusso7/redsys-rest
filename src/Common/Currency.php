@@ -4,7 +4,7 @@ namespace RedsysRest\Common;
 
 class Currency
 {
-    private const EUR = '918';
+    private const EUR = '978';
 
     private string $code;
 

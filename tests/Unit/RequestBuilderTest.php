@@ -7,15 +7,18 @@ use RedsysRest\RequestBuilder;
 
 class RequestBuilderTest extends TestCase
 {
-    private const TEST_ORDER = '000000000001';
+    private const TEST_ORDER = '1446068581';
     private const TEST_KEY = 'sq7HjrUOBfKmC576ILgskD5srU870gJ7';
     private const TEST_PARAMS = [
-        Params::PARAM_AMOUNT => 10000,
+        Params::PARAM_AMOUNT => '145',
         Params::PARAM_ORDER => self::TEST_ORDER,
-        Params::PARAM_MERCHANT => '999008881',
-        Params::PARAM_CURRENCY => '981',
-        Params::PARAM_TRANSACTION_TYPE => 0,
-        Params::PARAM_TERMINAL => '001',
+        Params::PARAM_MERCHANT => '336664842',
+        Params::PARAM_CURRENCY => '978',
+        Params::PARAM_TRANSACTION_TYPE => '0',
+        Params::PARAM_TERMINAL => '2',
+        Params::PARAM_CARD_CVV2 => '123',
+        Params::PARAM_CARD_EXPIRATION_DATE => '1512',
+        Params::PARAM_CARD_NUMBER => '4548816134587756',
     ];
 
     public function testItShouldBuildTheParameters()
@@ -23,7 +26,7 @@ class RequestBuilderTest extends TestCase
         $sut = new RequestBuilder;
         $parameters = $sut->encodeParameters(self::TEST_PARAMS);
 
-        $expected = 'eyJEU19NRVJDSEFOVF9BTU9VTlQiOjEwMDAwLCJEU19NRVJDSEFOVF9PUkRFUiI6IjAwMDAwMDAwMDAwMSIsIkRTX01FUkNIQU5UX01FUkNIQU5UQ09ERSI6Ijk5OTAwODg4MSIsIkRTX01FUkNIQU5UX0NVUlJFTkNZIjoiOTgxIiwiRFNfTUVSQ0hBTlRfVFJBTlNBQ1RJT05UWVBFIjowLCJEU19NRVJDSEFOVF9URVJNSU5BTCI6IjAwMSJ9';
+        $expected = 'eyJEU19NRVJDSEFOVF9BTU9VTlQiOiIxNDUiLCJEU19NRVJDSEFOVF9PUkRFUiI6IjE0NDYwNjg1ODEiLCJEU19NRVJDSEFOVF9NRVJDSEFOVENPREUiOiIzMzY2NjQ4NDIiLCJEU19NRVJDSEFOVF9DVVJSRU5DWSI6Ijk3OCIsIkRTX01FUkNIQU5UX1RSQU5TQUNUSU9OVFlQRSI6IjAiLCJEU19NRVJDSEFOVF9URVJNSU5BTCI6IjIiLCJEU19NRVJDSEFOVF9DVlYyIjoiMTIzIiwiRFNfTUVSQ0hBTlRfRVhQSVJZREFURSI6IjE1MTIiLCJEU19NRVJDSEFOVF9QQU4iOiI0NTQ4ODE2MTM0NTg3NzU2In0=';
         $this->assertEquals($expected, $parameters);
     }
 
@@ -32,7 +35,7 @@ class RequestBuilderTest extends TestCase
         $sut = new RequestBuilder;
         $encryptedKey = $sut->encrypt3DES(self::TEST_ORDER, self::TEST_KEY);
 
-        $expectedKey = base64_decode('LxdcNgoaWfPXpZe5tuCNSA==');
+        $expectedKey = base64_decode('3sr0oTnSKSFDTDDBjgQxrw==');
         $this->assertEquals($expectedKey, $encryptedKey);
     }
 
@@ -44,7 +47,7 @@ class RequestBuilderTest extends TestCase
             $sut->encrypt3DES(self::TEST_ORDER, self::TEST_KEY)
         );
 
-        $expectedSignature = 'fSmIwCO7c1arvQwO7bKoOOpIrZoGqkGFlbjvWuEI7cw=';
+        $expectedSignature = 'ZWGZpejdbyg3v7ZSd3JCfQOq042iRZj41XjRsIH5iIQ=';
         $this->assertEquals($expectedSignature, $signature);
     }
 }
