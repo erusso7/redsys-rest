@@ -44,9 +44,4 @@ class Refund implements Order
     {
         return $this->number;
     }
-
-    public function method(): string
-    {
-        return 'post';
-    }
 }

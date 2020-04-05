@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Mockery;
@@ -22,8 +23,7 @@ class RedsysTest extends TestCase
 
     public function testItShouldCreateTheInstanceWithConfig()
     {
-        $client = Mockery::mock(ClientInterface::class);
-        $initialSut = new Redsys($client, new RequestBuilder);
+        $initialSut = new Redsys(new Client, new RequestBuilder);
         $configuredSut = $initialSut->withConfig($this->defaultConfig());
 
         $this->assertNotSame($initialSut, $configuredSut);
@@ -32,40 +32,35 @@ class RedsysTest extends TestCase
 
     public function testItShouldThrowErrorIfClientIsNotConfigured()
     {
-        $client = Mockery::mock(ClientInterface::class);
-        $order = Mockery::mock(Order::class);
-        $sut = new Redsys($client, new RequestBuilder);
+        $sut = new Redsys(new Client, new RequestBuilder);
 
         $this->expectException(UnconfiguredClient::class);
 
+        $order = Mockery::mock(Order::class);
         $sut->execute($order);
     }
 
     public function testItShouldExecuteTheRequestedOrder()
     {
         $client = Mockery::mock(ClientInterface::class);
-        $client->shouldReceive('send')->andReturn(new Response);
+        $client->shouldReceive('send')->once()->andReturn(new Response);
 
         $params = [Params::PARAM_ORDER => '000000000001',];
         $order = Mockery::mock(Order::class);
-        $order->shouldReceive('method')->andReturn('post');
         $order->shouldReceive('params')->andReturn($params);
 
         $sut = new Redsys($client, new RequestBuilder, $this->defaultConfig());
         $sut->execute($order);
-
-        $client->shouldHaveReceived('send')->once();
     }
 
     public function testItShouldThrowRedsysException()
     {
         $response = new Response(200, [], '{"errorCode": "SIS0057"}');
         $client = Mockery::mock(ClientInterface::class);
-        $client->shouldReceive('send')->andReturn($response);
+        $client->shouldReceive('send')->once()->andReturn($response);
 
         $params = [Params::PARAM_ORDER => '000000000001',];
         $order = Mockery::mock(Order::class);
-        $order->shouldReceive('method')->andReturn('post');
         $order->shouldReceive('params')->andReturn($params);
 
         $this->expectException(RedsysError::class);

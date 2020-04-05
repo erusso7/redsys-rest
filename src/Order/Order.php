@@ -6,7 +6,5 @@ interface Order
 {
     public function number(): string;
 
-    public function method(): string;
-
     public function params(): array;
 }
