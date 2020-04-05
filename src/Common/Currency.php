@@ -5,6 +5,7 @@ namespace RedsysRest\Common;
 class Currency
 {
     private const EUR = '978';
+    private const USD = '840';
 
     private string $code;
 
@@ -16,6 +17,11 @@ class Currency
     public static function eur(): self
     {
         return new self(self::EUR);
+    }
+
+    public static function usd(): self
+    {
+        return new self(self::USD);
     }
 
     public function code(): string
