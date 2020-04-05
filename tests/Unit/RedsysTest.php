@@ -3,21 +3,28 @@
 namespace Tests\Unit;
 
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Response;
 use Mockery;
+use RedsysRest\Common\Currency;
+use RedsysRest\Common\Params;
 use RedsysRest\Config;
+use RedsysRest\Exceptions\RedsysError;
 use RedsysRest\Exceptions\UnconfiguredClient;
 use RedsysRest\Order\Order;
 use RedsysRest\Redsys;
+use RedsysRest\RequestBuilder;
 
 class RedsysTest extends TestCase
 {
     private const SAMPLE_KEY = 'secret-key-from-redsys';
+    private const SAMPLE_MERCHANT = '1234567890';
+    private const SAMPLE_TERMINAL = '001';
 
     public function testItShouldCreateTheInstanceWithConfig()
     {
         $client = Mockery::mock(ClientInterface::class);
-        $initialSut = new Redsys($client);
-        $configuredSut = $initialSut->withConfig(new Config(self::SAMPLE_KEY));
+        $initialSut = new Redsys($client, new RequestBuilder);
+        $configuredSut = $initialSut->withConfig($this->defaultConfig());
 
         $this->assertNotSame($initialSut, $configuredSut);
         $this->assertNotNull($configuredSut->config());
@@ -27,7 +34,7 @@ class RedsysTest extends TestCase
     {
         $client = Mockery::mock(ClientInterface::class);
         $order = Mockery::mock(Order::class);
-        $sut = new Redsys($client);
+        $sut = new Redsys($client, new RequestBuilder);
 
         $this->expectException(UnconfiguredClient::class);
 
@@ -36,16 +43,45 @@ class RedsysTest extends TestCase
 
     public function testItShouldExecuteTheRequestedOrder()
     {
-        $client = Mockery::spy(ClientInterface::class);
+        $client = Mockery::mock(ClientInterface::class);
+        $client->shouldReceive('send')->andReturn(new Response);
+
+        $params = [Params::PARAM_ORDER => '000000000001',];
         $order = Mockery::mock(Order::class);
         $order->shouldReceive('method')->andReturn('post');
+        $order->shouldReceive('params')->andReturn($params);
 
-        $params = [];
-        $order->shouldReceive('jsonSerialize')->andReturn($params);
-
-        $sut = new Redsys($client, new Config(self::SAMPLE_KEY));
+        $sut = new Redsys($client, new RequestBuilder, $this->defaultConfig());
         $sut->execute($order);
 
         $client->shouldHaveReceived('send')->once();
+    }
+
+    public function testItShouldThrowRedsysException()
+    {
+        $response = new Response(200, [], '{"errorCode": "SIS0057"}');
+        $client = Mockery::mock(ClientInterface::class);
+        $client->shouldReceive('send')->andReturn($response);
+
+        $params = [Params::PARAM_ORDER => '000000000001',];
+        $order = Mockery::mock(Order::class);
+        $order->shouldReceive('method')->andReturn('post');
+        $order->shouldReceive('params')->andReturn($params);
+
+        $this->expectException(RedsysError::class);
+        $this->expectExceptionMessage('SIS0057 - El importe a devolver supera el permitido.');
+
+        $sut = new Redsys($client, new RequestBuilder, $this->defaultConfig());
+        $sut->execute($order);
+    }
+
+    private function defaultConfig(): Config
+    {
+        return new Config(
+            self::SAMPLE_KEY,
+            Currency::eur(),
+            self::SAMPLE_MERCHANT,
+            self::SAMPLE_TERMINAL
+        );
     }
 }
