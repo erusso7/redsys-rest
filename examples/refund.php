@@ -1,7 +1,10 @@
 <?php declare(strict_types = 1);
 
+use GuzzleHttp\Client as GuzzleClient;
+use RedsysRest\Client;
 use RedsysRest\Common\Currency;
 use RedsysRest\Configurator;
+use RedsysRest\Encrypter;
 use RedsysRest\Orders\Refund;
 use RedsysRest\RequestBuilder;
 
@@ -26,12 +29,12 @@ if (!$order || !$order) {
 require_once 'vendor/autoload.php';
 $config = new Configurator(
     $secret,
-    Currency::eur(),
+    Currency::eur()->code(),
     $merchant,
     $terminal,
     Configurator::ENV_TEST
 );
-$redsys = new Client(new Client, new RequestBuilder, $config);
+$redsys = new Client(new GuzzleClient, new RequestBuilder(new Encrypter), $config);
 
 $order = new Refund((string)$amount, (string)$order);
 
