@@ -2,52 +2,77 @@
 
 namespace Tests\Unit;
 
+use Mockery;
+use RedsysRest\Common\Currency;
 use RedsysRest\Common\Params;
+use RedsysRest\Config;
+use RedsysRest\Encrypter;
 use RedsysRest\RequestBuilder;
 
 class RequestBuilderTest extends TestCase
 {
-    private const TEST_ORDER = '1446068581';
-    private const TEST_KEY = 'sq7HjrUOBfKmC576ILgskD5srU870gJ7';
-    private const TEST_PARAMS = [
-        Params::PARAM_AMOUNT => '145',
-        Params::PARAM_ORDER => self::TEST_ORDER,
-        Params::PARAM_MERCHANT => '336664842',
-        Params::PARAM_CURRENCY => '978',
-        Params::PARAM_TRANSACTION_TYPE => '0',
-        Params::PARAM_TERMINAL => '2',
-        Params::PARAM_CARD_CVV2 => '123',
-        Params::PARAM_CARD_EXPIRATION_DATE => '1512',
-        Params::PARAM_CARD_NUMBER => '4548816134587756',
-    ];
+    private $orderParams;
+    private $config;
+    private $expectedContent;
+    private $expectedSignature;
+    private $requestResult;
 
-    public function testItShouldBuildTheParameters()
+    public function testItShouldCreateAValidRequest()
     {
-        $sut = new RequestBuilder;
-        $parameters = $sut->encodeParameters(self::TEST_PARAMS);
+        $this->givenAValidOrder();
+        $this->andADefaultConfig();
 
-        $expected = 'eyJEU19NRVJDSEFOVF9BTU9VTlQiOiIxNDUiLCJEU19NRVJDSEFOVF9PUkRFUiI6IjE0NDYwNjg1ODEiLCJEU19NRVJDSEFOVF9NRVJDSEFOVENPREUiOiIzMzY2NjQ4NDIiLCJEU19NRVJDSEFOVF9DVVJSRU5DWSI6Ijk3OCIsIkRTX01FUkNIQU5UX1RSQU5TQUNUSU9OVFlQRSI6IjAiLCJEU19NRVJDSEFOVF9URVJNSU5BTCI6IjIiLCJEU19NRVJDSEFOVF9DVlYyIjoiMTIzIiwiRFNfTUVSQ0hBTlRfRVhQSVJZREFURSI6IjE1MTIiLCJEU19NRVJDSEFOVF9QQU4iOiI0NTQ4ODE2MTM0NTg3NzU2In0=';
-        $this->assertEquals($expected, $parameters);
+        $this->whenBuildingTheRequest();
+
+        $this->thenTheRequestShouldBeBuilt();
     }
 
-    public function testItShouldEncryptTheKey()
+    private function givenAValidOrder()
     {
-        $sut = new RequestBuilder;
-        $encryptedKey = $sut->encrypt3DES(self::TEST_ORDER, self::TEST_KEY);
-
-        $expectedKey = base64_decode('3sr0oTnSKSFDTDDBjgQxrw==');
-        $this->assertEquals($expectedKey, $encryptedKey);
+        $this->orderParams = [Params::PARAM_ORDER => 'some-order'];
     }
 
-    public function testItShouldBuildTheSignature()
+    private function andADefaultConfig()
     {
-        $sut = new RequestBuilder;
-        $signature = $sut->signContent(
-            $sut->encodeParameters(self::TEST_PARAMS),
-            $sut->encrypt3DES(self::TEST_ORDER, self::TEST_KEY)
+        $this->config = new Config(
+            'some-secret',
+            Currency::eur(),
+            'merchant-code',
+            'terminal-code'
         );
+    }
 
-        $expectedSignature = 'ZWGZpejdbyg3v7ZSd3JCfQOq042iRZj41XjRsIH5iIQ=';
-        $this->assertEquals($expectedSignature, $signature);
+    private function whenBuildingTheRequest(): void
+    {
+        $this->expectedContent = 'some-base64-encoded-params';
+        $this->expectedSignature = 'some-signature';
+
+        $encrypter = Mockery::mock(Encrypter::class);
+        $encrypter
+            ->shouldReceive('encodeParameters')
+            ->andReturn($this->expectedContent);
+        $encrypter
+            ->shouldReceive('encrypt3DES')
+            ->andReturn('encoded-key');
+        $encrypter
+            ->shouldReceive('signContent')
+            ->andReturn($this->expectedSignature);
+
+        $sut = new RequestBuilder($encrypter);
+        $this->requestResult = $sut->build($this->config, $this->orderParams);
+    }
+
+    private function thenTheRequestShouldBeBuilt(): void
+    {
+        $expectedParams = [
+            'Ds_MerchantParameters' => $this->expectedContent,
+            'Ds_Signature' => $this->expectedSignature,
+            'Ds_SignatureVersion' => 'HMAC_SHA256_V1',
+        ];
+
+        $this->assertEquals('POST', $this->requestResult->getMethod());
+        $this->assertEquals($this->config->url(), $this->requestResult->getUri());
+        $this->assertEquals(['application/json'], $this->requestResult->getHeader('Content-Type'));
+        $this->assertEquals($expectedParams, json_decode($this->requestResult->getBody()->getContents(), true));
     }
 }

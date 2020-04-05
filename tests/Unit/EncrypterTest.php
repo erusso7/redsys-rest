@@ -4,7 +4,6 @@ namespace Tests\Unit;
 
 use RedsysRest\Common\Params;
 use RedsysRest\Encrypter;
-use RedsysRest\RequestBuilder;
 
 class EncrypterTest extends TestCase
 {
