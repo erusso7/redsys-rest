@@ -5,3 +5,6 @@ before_script:
 
 script:
   - docker run --rm -t redsys-rest make test check-lint
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

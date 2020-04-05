@@ -1,3 +1,5 @@
+[![Build Status](https://api.travis-ci.org/erusso7/redsys-rest.svg?branch=master)](https://travis-ci.org/erusso7/redsys-rest)
+
 # Redsys REST
 This is a simple library to use the RedSys service via the REST api.
 
