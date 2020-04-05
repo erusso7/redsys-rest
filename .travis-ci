@@ -1,3 +1,7 @@
-language: php
-php:
-  - 7.3
+language: minimal
+
+before_script:
+  - docker build -t redsys-rest .
+
+script:
+  - docker run --rm -t redsys-rest make test check-lint
