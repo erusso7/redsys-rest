@@ -32,9 +32,9 @@ class Refund implements Order
     {
         return [
             Params::PARAM_AMOUNT => $this->amount,
-            Params::PARAM_CURRENCY => $this->currency->code(),
-            Params::PARAM_MERCHANT => $this->merchant,
             Params::PARAM_ORDER => $this->number,
+            Params::PARAM_CURRENCY => isset($this->currency) ? $this->currency->code() : null,
+            Params::PARAM_MERCHANT => $this->merchant,
             Params::PARAM_TERMINAL => $this->terminal,
             Params::PARAM_TRANSACTION_TYPE => self::TYPE,
         ];
