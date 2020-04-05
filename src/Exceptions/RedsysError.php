@@ -6,6 +6,7 @@ use RuntimeException;
 
 class RedsysError extends RuntimeException
 {
+    // @codingStandardsIgnoreStart
     private const ERROR_MSG = [
         'SIS0429' => 'Error en la versión enviada por el comercio en el parámetro Ds_SignatureVersion',
         'SIS0430' => 'Error al decodificar el parámetro Ds_MerchantParameters',
@@ -169,6 +170,7 @@ class RedsysError extends RuntimeException
         'SIS0322' => 'Error de formato en Ds_Merchant_Group.',
         'SIS0325' => 'Se ha pedido no mostrar pantallas pero no se ha enviado ninguna referencia de tarjeta.',
     ];
+    // @codingStandardsIgnoreEnd
 
     public static function create(string $code): self
     {
