@@ -2,12 +2,12 @@
 
 namespace RedsysRest\Exceptions;
 
-use RedsysRest\Config;
+use RedsysRest\Configurator;
 use RuntimeException;
 
 class UnconfiguredClient extends RuntimeException
 {
-    private const MESSAGE = 'You must use an object of type ' . Config::class . ' to configure the client.';
+    private const MESSAGE = 'You must use an object of type ' . Configurator::class . ' to configure the client.';
 
     public static function create()
     {

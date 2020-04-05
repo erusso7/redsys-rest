@@ -17,7 +17,7 @@ class RequestBuilder
         $this->encrypter = $encrypter;
     }
 
-    public function build(Config $config, array $orderParams): RequestInterface
+    public function build(Configurator $config, array $orderParams): RequestInterface
     {
         $content = $this->encrypter->encodeParameters($orderParams);
 

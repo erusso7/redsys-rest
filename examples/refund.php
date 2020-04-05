@@ -2,9 +2,9 @@
 
 use GuzzleHttp\Client;
 use RedsysRest\Common\Currency;
-use RedsysRest\Config;
+use RedsysRest\Configurator;
 use RedsysRest\Order\Refund;
-use RedsysRest\Redsys;
+use RedsysRest\Client;
 use RedsysRest\RequestBuilder;
 
 $secret = getenv('REDSYS_SECRET') ?: 'sq7HjrUOBfKmC576ILgskD5srU870gJ7';
@@ -26,14 +26,14 @@ if (!$order || !$order) {
 }
 
 require_once 'vendor/autoload.php';
-$config = new Config(
+$config = new Configurator(
     $secret,
     Currency::eur(),
     $merchant,
     $terminal,
-    Config::ENV_TEST
+    Configurator::ENV_TEST
 );
-$redsys = new Redsys(new Client, new RequestBuilder, $config);
+$redsys = new Client(new Client, new RequestBuilder, $config);
 
 $order = new Refund((string)$amount, (string)$order);
 

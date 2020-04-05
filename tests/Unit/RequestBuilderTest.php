@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use Mockery;
 use RedsysRest\Common\Currency;
 use RedsysRest\Common\Params;
-use RedsysRest\Config;
+use RedsysRest\Configurator;
 use RedsysRest\Encrypter;
 use RedsysRest\RequestBuilder;
 
@@ -34,7 +34,7 @@ class RequestBuilderTest extends TestCase
 
     private function andADefaultConfig()
     {
-        $this->config = new Config(
+        $this->config = new Configurator(
             'some-secret',
             Currency::eur(),
             'merchant-code',
