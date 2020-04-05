@@ -2,10 +2,10 @@
 
 namespace RedsysRest;
 
-use RedsysRest\Common\Currency;
 use RedsysRest\Common\Params;
+use RedsysRest\Order\Order;
 
-class Config
+class Configurator
 {
     private const URL_TEST = 'https://sis-t.redsys.es:25443/sis/rest/trataPeticionREST';
     private const URL_LIVE = 'https://sis.redsys.es/sis/rest/trataPeticionREST';
@@ -15,14 +15,11 @@ class Config
 
     private string $secret;
     private string $url;
-    private Currency $defaultCurrency;
-    private string $defaultMerchant;
-    private string $defaultTerminal;
-    private $defaults;
+    private array $defaults;
 
     public function __construct(
         string $secret,
-        Currency $defaultCurrency,
+        string $defaultCurrencyCode,
         string $defaultMerchant,
         string $defaultTerminal,
         int $env = self::ENV_TEST
@@ -32,7 +29,7 @@ class Config
             ? self::URL_TEST
             : self::URL_LIVE;
 
-        $this->defaults[Params::PARAM_CURRENCY] = $defaultCurrency;
+        $this->defaults[Params::PARAM_CURRENCY] = $defaultCurrencyCode;
         $this->defaults[Params::PARAM_MERCHANT] = $defaultMerchant;
         $this->defaults[Params::PARAM_TERMINAL] = $defaultTerminal;
     }
@@ -47,8 +44,21 @@ class Config
         return $this->secret;
     }
 
-    public function default(string $paramKey)
+    public function buildParamsFor(Order $order): array
     {
-        return $this->defaults[$paramKey] ?? null;
+        $orderParams = $order->params();
+        $defaultParams = [
+            Params::PARAM_MERCHANT,
+            Params::PARAM_TERMINAL,
+            Params::PARAM_CURRENCY,
+        ];
+
+        foreach ($defaultParams as $paramKey) {
+            if (!isset($orderParams[$paramKey])) {
+                $orderParams[$paramKey] = $this->defaults[$paramKey];
+            }
+        }
+
+        return $orderParams;
     }
 }
