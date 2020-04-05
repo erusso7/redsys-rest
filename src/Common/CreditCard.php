@@ -4,10 +4,10 @@ namespace RedsysRest\Common;
 
 class CreditCard
 {
-    private string $number;
-    private string $cvv2;
-    private string $expirationMonth;
-    private string $expirationYear;
+    private $number;
+    private $cvv2;
+    private $expirationMonth;
+    private $expirationYear;
 
     public function __construct(
         string $number,

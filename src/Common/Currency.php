@@ -7,7 +7,7 @@ class Currency
     private const EUR = '978';
     private const USD = '840';
 
-    private string $code;
+    private $code;
 
     public function __construct(string $code)
     {

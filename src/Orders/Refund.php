@@ -8,11 +8,11 @@ use RedsysRest\Common\Params;
 class Refund implements Order
 {
     private const TYPE = 3;
-    private string $amount;
-    private string $number;
-    private ?Currency $currency;
-    private ?string $merchant;
-    private ?string $terminal;
+    private $amount;
+    private $number;
+    private $currency;
+    private $merchant;
+    private $terminal;
 
     public function __construct(
         string $amount,

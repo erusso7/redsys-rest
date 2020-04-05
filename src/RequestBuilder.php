@@ -10,7 +10,7 @@ class RequestBuilder
 {
     private const SIGNATURE_ALGORITHM = 'HMAC_SHA256_V1';
 
-    private Encrypter $encrypter;
+    private $encrypter;
 
     public function __construct(Encrypter $encrypter)
     {

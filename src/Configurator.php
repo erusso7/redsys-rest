@@ -13,9 +13,9 @@ class Configurator
     public const ENV_TEST = 0;
     public const ENV_LIVE = 1;
 
-    private string $secret;
-    private string $url;
-    private array $defaults;
+    private $secret;
+    private $url;
+    private $defaults;
 
     public function __construct(
         string $secret,

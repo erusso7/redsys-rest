@@ -9,9 +9,9 @@ use RedsysRest\Orders\Order;
 
 class Client
 {
-    private ClientInterface $client;
-    private RequestBuilder $builder;
-    private ?Configurator $config;
+    private $client;
+    private $builder;
+    private $config;
 
     public function __construct(
         ClientInterface $client,
