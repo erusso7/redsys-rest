@@ -2,9 +2,11 @@
 
 namespace RedsysRest\Order;
 
-use Psr\Http\Message\RequestInterface;
-
 interface Order
 {
-    public function request(): RequestInterface;
+    public function number(): string;
+
+    public function method(): string;
+
+    public function params(): array;
 }

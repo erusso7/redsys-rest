@@ -17,13 +17,18 @@ class RequestBuilder
         $key = $this->encrypt3DES($orderParams[Params::PARAM_ORDER], $config->secret());
         $signature = $this->signContent($content, $key);
 
-        $requestParams = [
+        $requestBody = json_encode([
             'Ds_MerchantParameters' => $content,
             'Ds_Signature' => $signature,
             'Ds_SignatureVersion' => self::SIGNATURE_ALGORITHM,
-        ];
+        ]);
 
-        return new Request('post', $config->url(), [], json_encode($requestParams));
+        return new Request(
+            'post',
+            $config->url(),
+            ['Content-Type' => 'application/json'],
+            $requestBody
+        );
     }
 
     public function encodeParameters(array $orderParams): string
@@ -61,3 +66,10 @@ class RequestBuilder
         );
     }
 }
+
+/*/
+app
+{"Ds_MerchantParameters":"eyJEU19NRVJDSEFOVF9BTU9VTlQiOiIxMDAiLCJEU19NRVJDSEFOVF9DVVJSRU5DWSI6Ijk3OCIsIkRTX01FUkNIQU5UX01FUkNIQU5UQ09ERSI6IjMzNjY2NDg0MiIsIkRTX01FUkNIQU5UX09SREVSIjoiMDA0NFJLTkdBTENIIiwiRFNfTUVSQ0hBTlRfVEVSTUlOQUwiOiIyIiwiRFNfTUVSQ0hBTlRfVFJBTlNBQ1RJT05UWVBFIjozfQ==","Ds_Signature":"8nXEDHJB\/E\/gLJ1\/0FJjyyoxbv\/v4lLBBjqHeW+tcto=","Ds_SignatureVersion":"HMAC_SHA256_V1"}
+test
+{"Ds_MerchantParameters":"eyJEU19NRVJDSEFOVF9BTU9VTlQiOiIxMDAiLCJEU19NRVJDSEFOVF9DVVJSRU5DWSI6Ijk3OCIsIkRTX01FUkNIQU5UX01FUkNIQU5UQ09ERSI6IjMzNjY2NDg0MiIsIkRTX01FUkNIQU5UX09SREVSIjoiMDA0NFJLTkdBTENIIiwiRFNfTUVSQ0hBTlRfVEVSTUlOQUwiOiIyIiwiRFNfTUVSQ0hBTlRfVFJBTlNBQ1RJT05UWVBFIjozfQ==","Ds_Signature":"8nXEDHJB\/E\/gLJ1\/0FJjyyoxbv\/v4lLBBjqHeW+tcto=","Ds_SignatureVersion":"HMAC_SHA256_V1"}
+/*/
