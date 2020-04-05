@@ -12,7 +12,7 @@ test:
 
 check-lint:
 	@php ./vendor/bin/phpcs
-	@php ./vendor/bin/phpstan analyse --level=5  src tests
+	@php ./vendor/bin/phpstan analyse -c ./phpstan.neon
 
 fix-lint:
 	@php ./vendor/bin/phpcbf
