@@ -36,7 +36,7 @@ class RequestBuilderTest extends TestCase
     {
         $this->config = new Configurator(
             'some-secret',
-            Currency::eur(),
+            Currency::eur()->code(),
             'merchant-code',
             'terminal-code'
         );

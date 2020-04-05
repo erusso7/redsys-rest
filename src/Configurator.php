@@ -3,7 +3,7 @@
 namespace RedsysRest;
 
 use RedsysRest\Common\Params;
-use RedsysRest\Order\Order;
+use RedsysRest\Orders\Order;
 
 class Configurator
 {

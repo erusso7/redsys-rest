@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace RedsysRest\Order;
+namespace RedsysRest\Orders;
 
 use RedsysRest\Common\Currency;
 use RedsysRest\Common\Params;

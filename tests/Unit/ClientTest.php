@@ -6,13 +6,14 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Mockery;
+use RedsysRest\Client;
 use RedsysRest\Common\Currency;
 use RedsysRest\Common\Params;
 use RedsysRest\Configurator;
+use RedsysRest\Encrypter;
 use RedsysRest\Exceptions\RedsysError;
 use RedsysRest\Exceptions\UnconfiguredClient;
-use RedsysRest\Order\Order;
-use RedsysRest\Client;
+use RedsysRest\Orders\Order;
 use RedsysRest\RequestBuilder;
 
 class ClientTest extends TestCase
@@ -23,7 +24,10 @@ class ClientTest extends TestCase
 
     public function testItShouldCreateTheInstanceWithConfig()
     {
-        $initialSut = new Client(new GuzzleClient, new RequestBuilder);
+        $initialSut = new Client(
+            new GuzzleClient,
+            new RequestBuilder(new Encrypter)
+        );
         $configuredSut = $initialSut->withConfig($this->defaultConfig());
 
         $this->assertNotSame($initialSut, $configuredSut);
@@ -32,7 +36,7 @@ class ClientTest extends TestCase
 
     public function testItShouldThrowErrorIfClientIsNotConfigured()
     {
-        $sut = new Client(new GuzzleClient, new RequestBuilder);
+        $sut = new Client(new GuzzleClient, new RequestBuilder(new Encrypter));
 
         $this->expectException(UnconfiguredClient::class);
 
@@ -49,7 +53,7 @@ class ClientTest extends TestCase
         $order = Mockery::mock(Order::class);
         $order->shouldReceive('params')->andReturn($params);
 
-        $sut = new Client($client, new RequestBuilder, $this->defaultConfig());
+        $sut = new Client($client, new RequestBuilder(new Encrypter), $this->defaultConfig());
         $sut->execute($order);
     }
 
@@ -66,7 +70,7 @@ class ClientTest extends TestCase
         $this->expectException(RedsysError::class);
         $this->expectExceptionMessage('SIS0057 - El importe a devolver supera el permitido.');
 
-        $sut = new Client($client, new RequestBuilder, $this->defaultConfig());
+        $sut = new Client($client, new RequestBuilder(new Encrypter), $this->defaultConfig());
         $sut->execute($order);
     }
 
@@ -74,7 +78,7 @@ class ClientTest extends TestCase
     {
         return new Configurator(
             self::SAMPLE_KEY,
-            Currency::eur(),
+            Currency::eur()->code(),
             self::SAMPLE_MERCHANT,
             self::SAMPLE_TERMINAL
         );

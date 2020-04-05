@@ -6,7 +6,7 @@ use Mockery;
 use RedsysRest\Common\Currency;
 use RedsysRest\Common\Params;
 use RedsysRest\Configurator;
-use RedsysRest\Order\Order;
+use RedsysRest\Orders\Order;
 
 class ConfiguratorTest extends TestCase
 {

@@ -5,7 +5,7 @@ namespace RedsysRest;
 use GuzzleHttp\ClientInterface;
 use RedsysRest\Exceptions\RedsysError;
 use RedsysRest\Exceptions\UnconfiguredClient;
-use RedsysRest\Order\Order;
+use RedsysRest\Orders\Order;
 
 class Client
 {

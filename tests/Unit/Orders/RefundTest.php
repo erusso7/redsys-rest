@@ -1,10 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Unit\Order;
+namespace Tests\Unit\Orders;
 
 use RedsysRest\Common\Currency;
 use RedsysRest\Common\Params;
-use RedsysRest\Order\Refund;
+use RedsysRest\Orders\Refund;
 use Tests\Unit\TestCase;
 
 class RefundTest extends TestCase

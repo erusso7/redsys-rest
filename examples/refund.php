@@ -1,10 +1,8 @@
 <?php declare(strict_types = 1);
 
-use GuzzleHttp\Client;
 use RedsysRest\Common\Currency;
 use RedsysRest\Configurator;
-use RedsysRest\Order\Refund;
-use RedsysRest\Client;
+use RedsysRest\Orders\Refund;
 use RedsysRest\RequestBuilder;
 
 $secret = getenv('REDSYS_SECRET') ?: 'sq7HjrUOBfKmC576ILgskD5srU870gJ7';
