@@ -5,8 +5,9 @@ Take a look to  [the official documentation](https://pagosonline.redsys.es/desar
 
 #### Requirements
 * `php 7.3 or higher`
-* `OpenSSL extension`
-* `Json extension (commonly already included)`
+* `composer`
+* `ext-openssl`
+* `ext-json` (commonly already included)`
 
 #### Usage:
 Run in your terminal
