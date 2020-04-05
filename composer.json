@@ -30,5 +30,10 @@
     "symfony/var-dumper": "^5.0",
     "squizlabs/php_codesniffer": "^3.5",
     "phpstan/phpstan": "^0.12.18"
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "rm -rf .git/hooks && ln -sf ../git/hooks .git/hooks"
+    ]
   }
 }
