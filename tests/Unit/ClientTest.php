@@ -2,20 +2,20 @@
 
 namespace Tests\Unit;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Mockery;
 use RedsysRest\Common\Currency;
 use RedsysRest\Common\Params;
-use RedsysRest\Config;
+use RedsysRest\Configurator;
 use RedsysRest\Exceptions\RedsysError;
 use RedsysRest\Exceptions\UnconfiguredClient;
 use RedsysRest\Order\Order;
-use RedsysRest\Redsys;
+use RedsysRest\Client;
 use RedsysRest\RequestBuilder;
 
-class RedsysTest extends TestCase
+class ClientTest extends TestCase
 {
     private const SAMPLE_KEY = 'secret-key-from-redsys';
     private const SAMPLE_MERCHANT = '1234567890';
@@ -23,7 +23,7 @@ class RedsysTest extends TestCase
 
     public function testItShouldCreateTheInstanceWithConfig()
     {
-        $initialSut = new Redsys(new Client, new RequestBuilder);
+        $initialSut = new Client(new GuzzleClient, new RequestBuilder);
         $configuredSut = $initialSut->withConfig($this->defaultConfig());
 
         $this->assertNotSame($initialSut, $configuredSut);
@@ -32,7 +32,7 @@ class RedsysTest extends TestCase
 
     public function testItShouldThrowErrorIfClientIsNotConfigured()
     {
-        $sut = new Redsys(new Client, new RequestBuilder);
+        $sut = new Client(new GuzzleClient, new RequestBuilder);
 
         $this->expectException(UnconfiguredClient::class);
 
@@ -49,7 +49,7 @@ class RedsysTest extends TestCase
         $order = Mockery::mock(Order::class);
         $order->shouldReceive('params')->andReturn($params);
 
-        $sut = new Redsys($client, new RequestBuilder, $this->defaultConfig());
+        $sut = new Client($client, new RequestBuilder, $this->defaultConfig());
         $sut->execute($order);
     }
 
@@ -66,13 +66,13 @@ class RedsysTest extends TestCase
         $this->expectException(RedsysError::class);
         $this->expectExceptionMessage('SIS0057 - El importe a devolver supera el permitido.');
 
-        $sut = new Redsys($client, new RequestBuilder, $this->defaultConfig());
+        $sut = new Client($client, new RequestBuilder, $this->defaultConfig());
         $sut->execute($order);
     }
 
-    private function defaultConfig(): Config
+    private function defaultConfig(): Configurator
     {
-        return new Config(
+        return new Configurator(
             self::SAMPLE_KEY,
             Currency::eur(),
             self::SAMPLE_MERCHANT,
