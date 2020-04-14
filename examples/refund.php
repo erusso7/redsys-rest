@@ -20,7 +20,7 @@ if (!$terminal || !$merchant) {
 $order = $argv[1] ?? false;
 $amount = $argv[2] ?? false;
 
-if (!$order || !$order) {
+if (!$amount || !$order) {
     echo 'An payment order and the amount you want to return is required.' . PHP_EOL;
     echo 'Usage example: php ' . $argv[0] . ' 000000000001 100' . PHP_EOL;
     exit(1);
